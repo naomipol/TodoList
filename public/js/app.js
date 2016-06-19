@@ -1,21 +1,28 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var TodoStore = require('./stores/TodoStore')
+var TodoActions = require('./actions/TodoActions');
 
 var NewItem = React.createClass({
+
   getInitialState: function() {
     return {edit: false,
             text: ""};
   },
+
   handleChange: function(e) {
     this.setState({text: e.target.value});
   },
+
   handleClick: function(e) {
     this.setState({edit: true});
   },
+
   addItem: function() {
-    items.push({id: 2, text: this.state.text});
-    console.log(items);
+    TodoActions.create(this.state.text);
+    this.setState({edit: false, text: ''});
   },
+
   render: function() {
     var element;
     if(this.state.edit == true) {
@@ -40,18 +47,17 @@ var NewItem = React.createClass({
 });
 
 var TodoItem = React.createClass({
-  getInitialState: function() {
-    return {checked: this.props.checked};
-  },
+
   handleCheck: function(e) {
-    this.setState({checked: e.target.checked});
+    TodoActions.toggleComplete(this.props.item.id);
   },
+
   render: function() {
     return (
       <div>
-        <input type="checkbox" checked={this.state.checked} onChange={this.handleCheck}/>
-        <span className={(this.state.checked == true)  ? "checked" : ""}>
-          {this.props.text}
+        <input type="checkbox" checked={this.props.item.complete} onChange={this.handleCheck}/>
+        <span className={(this.props.item.complete == true)  ? "checked" : ""}>
+          {this.props.item.text}
         </span>
       </div>
     );
@@ -61,40 +67,56 @@ var TodoItem = React.createClass({
 var TodoList = React.createClass({
 
   render: function() {
-    var todoItems = this.props.items.map(function(item) {
-      return (
-        <TodoItem key={item.id} text={item.text} checked={item.checked}/>
-        );
-    });
-
+    var items = this.props.items;
+    var todoItems = [];
+    
+      for(var id in items) {
+      todoItems.push(<TodoItem key={id} item={items[id]}/>);
+    }
+    
     return (
       <div className="list">
         <h3>{this.props.title}</h3>
         {todoItems}
-        <NewItem addItem={this.props.addItem}/>
+        <NewItem/>
       </div>
       );
   }
 });
 
-var ListContainer = React.createClass({
+var getTodoState = function() {
+    return {
+      items: TodoStore.getAll(),
+      title: TodoStore.getTitle()
+    };
+  };
+
+var TodoApp = React.createClass({
+
   getInitialState: function() {
-    var items = [{id: 0, text: 'learn about react', checked: true}, {id: 1, text: 'learn about om/next', checked: false}];
-    return {items: items}
+    return getTodoState();
   },
-  addItem: function(newItem) {
-    this.setState({items: items.push(newItem)});
+
+  componentDidMount: function() {
+    TodoStore.addChangeListener(this._onChange);
   },
+
+  componentWillUnmount: function() {
+    TodoStore.removeChangeListener(this._onChange);
+  },
+
+  _onChange: function() {
+    this.setState(getTodoState());
+  },
+
   render: function() {
     return (
-      <TodoList items={this.state.items} addItem={this.addItem} title="To Learn"/>
+      <TodoList items={this.state.items} title={this.state.title}/>
       );
   }
 });
 
-var items = [{id: 1, text: "learn react"}, {id: 2, text: "learn node"}];
-
 ReactDOM.render(
-  <TodoList items={items} title="To Learn"/>,
+  <TodoApp/>,
   document.getElementById('content')
 );
