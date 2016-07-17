@@ -6,10 +6,9 @@ TodoActions = {
     $.get({
         url: 'http://localhost:7001/items',
         success: function(listData) {
-        list = JSON.parse(listData);
         AppDispatcher.dispatch({
           actionType: 'init',
-          list: list
+          list: listData
         });
       }
     });

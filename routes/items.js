@@ -3,16 +3,24 @@ var router = express.Router();
 
 
 router.get('/', function(req, res, next) {
-  res.send({title: 'Todos form server...', items: {dd2323ds: {id: 'dd2323ds', text: 'learn react', complete: false}, dsfd443: {id: 'dsfd443', text: 'learn all the nodes', complete: true}}});
+  var db = req.db;
+  var listcollection = db.get('listcollection');
+  listcollection.find({},{}, function(e,list) {
+    console.log(list);
+    res.send(list[0]);
+  })
 });
 
 router.post('/', function(req, res, next) {
   var text = req.body.text;
   var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-  //console.log(text);
   var item = {id: id, text: text, complete: false};
-  //console.log(item);
+  var db = req.db;
+  var listcollection = db.get('listcollection');
+
+  listcollection.update({_id: '578b2cd569d41651d15e3eec'}, {$push: {items: item}});
+
   res.send(item);
-})
+});
 
 module.exports = router;

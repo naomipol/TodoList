@@ -6,6 +6,11 @@ var CHANGE_EVENT = 'change';
 var _todoList = null;
 
 var initList = function(list) {
+  var itemsObject = {};
+  list.items.map(function(i) {
+    itemsObject[i.id] = i;
+  })
+  list.items = itemsObject;
   _todoList = list;
 }
 
