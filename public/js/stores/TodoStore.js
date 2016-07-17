@@ -3,11 +3,14 @@ var events = require('events');
 var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
-var _todoList = {items: {}, title: 'Todos...'};
+var _todoList = null;
 
-var createItem = function(text) {
-  var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-  _todoList.items[id] = ({id: id, text: text, complete: false});
+var initList = function(list) {
+  _todoList = list;
+}
+
+var createItem = function(item) {
+  _todoList.items[item.id] = item;
 }
 
 var editTitle = function(text) {
@@ -21,11 +24,15 @@ var toggleComplete = function(id) {
 var TodoStore = assign({}, events.EventEmitter.prototype, {
 
   getAll: function() {
-    return _todoList.items;
+    if(_todoList !== null) {
+      return _todoList.items;
+    }
   },
 
   getTitle: function() {
-    return _todoList.title;
+    if(_todoList !== null) {
+      return _todoList.title;
+    }
   },
 
    emitChange: function() {
@@ -46,12 +53,14 @@ AppDispatcher.register(function(action) {
   
   switch(action.actionType)
   {
+    case 'init':
+      initList(action.list);
+      TodoStore.emitChange();
+      break;
+
     case 'create':
-      var text = action.text.trim();
-      if(text !== '') {
-        createItem(text);
-        TodoStore.emitChange();
-      }
+      createItem(action.item);
+      TodoStore.emitChange();
       break;
     
     case 'edit_title':

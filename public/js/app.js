@@ -110,11 +110,18 @@ var TodoApp = React.createClass({
   },
 
   render: function() {
-    return (
-      <TodoList items={this.state.items} title={this.state.title}/>
-      );
+    if(this.state.items === null) {
+      return;
+    }
+    else {
+      return (
+        <TodoList items={this.state.items} title={this.state.title}/>
+        );
+    }
   }
 });
+
+TodoActions.initList();
 
 ReactDOM.render(
   <TodoApp/>,
