@@ -49,7 +49,7 @@ var NewItem = React.createClass({
 var TodoItem = React.createClass({
 
   handleCheck: function(e) {
-    TodoActions.toggleComplete(this.props.item.id);
+    TodoActions.toggleComplete(this.props.item);
   },
 
   render: function() {
@@ -66,17 +66,25 @@ var TodoItem = React.createClass({
 
 var TodoList = React.createClass({
 
+  // completeAll: function() {
+  //   TodoActions.completeAll(this.props.items);
+  // },
+
   render: function() {
     var items = this.props.items;
+    var sumCompleted = TodoStore.getSumCompleted();
+    var sum  = Object.keys(items).length;
     var todoItems = [];
     
-      for(var id in items) {
+    for(var id in items) {
       todoItems.push(<TodoItem key={id} item={items[id]}/>);
     }
     
     return (
       <div className="list">
         <h3>{this.props.title}</h3>
+        <b>{sumCompleted}/{sum}</b>
+        <button onClick={this.completeAll}>complete all</button>
         {todoItems}
         <NewItem/>
       </div>
@@ -110,8 +118,8 @@ var TodoApp = React.createClass({
   },
 
   render: function() {
-    if(this.state.items === null) {
-      return;
+    if(this.state.items === null || this.state.items === undefined) {
+      return null;
     }
     else {
       return (

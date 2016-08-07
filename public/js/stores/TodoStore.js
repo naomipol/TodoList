@@ -5,12 +5,17 @@ var assign = require('object-assign');
 var CHANGE_EVENT = 'change';
 var _todoList = null;
 
-var initList = function(list) {
+var mapify = function(items) {
   var itemsObject = {};
-  list.items.map(function(i) {
+  items.map(function(i) {
+    i.complete = JSON.parse(i.complete);
     itemsObject[i.id] = i;
-  })
-  list.items = itemsObject;
+  });
+  return itemsObject;
+}
+
+var initList = function(list) {
+  list.items = mapify(list.items);
   _todoList = list;
 }
 
@@ -22,8 +27,12 @@ var editTitle = function(text) {
   _todoList.title = text;
 }
 
-var toggleComplete = function(id) {
-  _todoList.items[id].complete = ! _todoList.items[id].complete;
+var setComplete = function(item) {
+  _todoList.items[item.id].complete = JSON.parse(item.complete);
+}
+
+var completeAll = function(items) {
+  _todoList.items = mapify(items);
 }
 
 var TodoStore = assign({}, events.EventEmitter.prototype, {
@@ -38,6 +47,16 @@ var TodoStore = assign({}, events.EventEmitter.prototype, {
     if(_todoList !== null) {
       return _todoList.title;
     }
+  },
+
+  getSumCompleted: function() {
+    var sum = 0;
+    for (var id in _todoList.items) {
+      if (_todoList.items[id].complete) {
+        sum++;
+      }
+    }
+    return sum;
   },
 
    emitChange: function() {
@@ -76,8 +95,13 @@ AppDispatcher.register(function(action) {
       }
       break;
     
-    case 'toggle_complete':
-      toggleComplete(action.id);
+    case 'set_complete':
+      setComplete(action.item);
+      TodoStore.emitChange();
+      break;
+
+    case 'complete_all':
+      completeAll(action.items);
       TodoStore.emitChange();
       break;
     

@@ -18,9 +18,38 @@ router.post('/', function(req, res, next) {
   var db = req.db;
   var listcollection = db.get('listcollection');
 
-  listcollection.update({_id: '578b2cd569d41651d15e3eec'}, {$push: {items: item}});
+  listcollection.update({_id: '5794572dc70e2d578eff037d'}, {$push: {items: item}});
 
   res.send(item);
 });
+
+router.put('/', function(req, res, next) {
+  var item = req.body;
+  console.log(item);
+  var db = req.db;
+  var listcollection = db.get('listcollection');
+  listcollection.update({_id: '5794572dc70e2d578eff037d', 'items.id': item.id}, {$set: {'items.$': item}});
+
+  res.send(item);
+});
+
+// router.post('/all', function(req, res, next) {
+//   var items = req.body;
+//   console.log(items);
+//   var db = req.db;
+//   var listcollection = db.get('listcollection');
+
+//   listcollection.find({ _id: '5794572dc70e2d578eff037d' }).forEach(function (doc) {
+//     doc.items.forEach(function (item) {
+//       item.comlpete = true;
+//     });
+//     db.listcollection.save(doc);
+//     res.send(doc.items);
+//   });
+
+//   //listcollection.update({_id: '5794572dc70e2d578eff037d'}, {$set: {items: items}});
+
+  
+// });
 
 module.exports = router;
