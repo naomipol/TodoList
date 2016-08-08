@@ -27,8 +27,13 @@ var editTitle = function(text) {
   _todoList.title = text;
 }
 
-var setComplete = function(item) {
-  _todoList.items[item.id].complete = JSON.parse(item.complete);
+var updateItem = function(item) {
+  item.complete = JSON.parse(item.complete);
+  _todoList.items[item.id] = item;
+}
+
+var deleteItem = function(item) {
+  delete _todoList.items[item.id];
 }
 
 var completeAll = function(items) {
@@ -88,15 +93,17 @@ AppDispatcher.register(function(action) {
       break;
     
     case 'edit_title':
-      var text = action.text.trim();
-      if(text !== '') {
-        editTitle(text);
-        TodoStore.emitChange();
-      }
+      editTitle(action.text);
+      TodoStore.emitChange();
       break;
-    
-    case 'set_complete':
-      setComplete(action.item);
+
+    case 'update_item':
+      updateItem(action.item);
+      TodoStore.emitChange();
+      break;
+
+    case 'delete_item':
+      deleteItem(action.item);
       TodoStore.emitChange();
       break;
 

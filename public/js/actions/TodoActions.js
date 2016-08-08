@@ -29,9 +29,16 @@ TodoActions = {
   },
 
   editTitle: function(text) {
-    AppDispatcher.dispatch({
-      actionType: 'edit_title',
-      text: text
+    $.ajax({
+      url: 'http://localhost:7001/items/title',
+      type: 'PUT',
+      data: {text: text},
+      success: function(title) {
+        AppDispatcher.dispatch({
+          actionType: 'edit_title',
+          text: title
+        });
+      }
     });
   },
 
@@ -44,7 +51,39 @@ TodoActions = {
       data: updatedItem,
       success: function(item) {
         AppDispatcher.dispatch({
-          actionType: 'set_complete',
+          actionType: 'update_item',
+          item: item
+        });
+      }
+    });
+  },
+
+  editItem: function(item,text) {
+    if(item.text !== text) {
+      var updatedItem = assign({},item);
+      updatedItem.text = text;
+      $.ajax({
+        url: 'http://localhost:7001/items',
+        type: 'PUT',
+        data: updatedItem,
+        success: function(item) {
+          AppDispatcher.dispatch({
+            actionType: 'update_item',
+            item: item
+          });
+        }
+      });
+    }
+  },
+
+  deleteItem: function(item) {
+    $.ajax({
+      url: 'http://localhost:7001/items',
+      type: 'DELETE',
+      data: item,
+      success: function(item) {
+        AppDispatcher.dispatch({
+          actionType: 'delete_item',
           item: item
         });
       }

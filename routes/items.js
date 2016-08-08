@@ -18,7 +18,7 @@ router.post('/', function(req, res, next) {
   var db = req.db;
   var listcollection = db.get('listcollection');
 
-  listcollection.update({_id: '5794572dc70e2d578eff037d'}, {$push: {items: item}});
+  listcollection.update({_id: '579d812a71a7d95889b4cb3c'}, {$push: {items: item}});
 
   res.send(item);
 });
@@ -28,7 +28,27 @@ router.put('/', function(req, res, next) {
   console.log(item);
   var db = req.db;
   var listcollection = db.get('listcollection');
-  listcollection.update({_id: '5794572dc70e2d578eff037d', 'items.id': item.id}, {$set: {'items.$': item}});
+  listcollection.update({_id: '579d812a71a7d95889b4cb3c', 'items.id': item.id}, {$set: {'items.$': item}});
+
+  res.send(item);
+});
+
+router.put('/title', function(req, res, next) {
+  var title = req.body.text;
+  console.log(title);
+  var db = req.db;
+  var listcollection = db.get('listcollection');
+  listcollection.update({_id: '579d812a71a7d95889b4cb3c'}, {$set: {'title': title}});
+
+  res.send(title);
+});
+
+router.delete('/', function(req, res, next) {
+  var item = req.body;
+  console.log(item);
+  var db = req.db;
+  var listcollection = db.get('listcollection');
+  listcollection.update({_id: '579d812a71a7d95889b4cb3c'}, {$pull: {items: {id: item.id}}});
 
   res.send(item);
 });
@@ -39,7 +59,7 @@ router.put('/', function(req, res, next) {
 //   var db = req.db;
 //   var listcollection = db.get('listcollection');
 
-//   listcollection.find({ _id: '5794572dc70e2d578eff037d' }).forEach(function (doc) {
+//   listcollection.find({ _id: '579d812a71a7d95889b4cb3c' }).forEach(function (doc) {
 //     doc.items.forEach(function (item) {
 //       item.comlpete = true;
 //     });
@@ -47,7 +67,7 @@ router.put('/', function(req, res, next) {
 //     res.send(doc.items);
 //   });
 
-//   //listcollection.update({_id: '5794572dc70e2d578eff037d'}, {$set: {items: items}});
+//   //listcollection.update({_id: '579d812a71a7d95889b4cb3c'}, {$set: {items: items}});
 
   
 // });
