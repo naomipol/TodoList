@@ -21,7 +21,17 @@ var NewItem = React.createClass({
 
   addItem: function() {
     TodoActions.create(this.state.text);
-    this.setState({edit: false, text: ''});
+    this.setState({text: ''});
+  },
+
+  onBlur: function() {
+    this.setState({edit: false});
+  },
+
+  onKeyDown: function(event) {
+    if (event.keyCode === 13) {
+      this.addItem();
+    }
   },
 
   render: function() {
@@ -33,7 +43,9 @@ var NewItem = React.createClass({
                     placeholder="Add an item..."
                     value={this.state.text}
                     autoFocus={true}
-                    onChange={this.handleChange}/>
+                    onChange={this.handleChange}
+                    onKeyDown={this.onKeyDown}
+                    onBlur={this.onBlur}/>
                     <button onClick={this.addItem}>Add</button>
                 </div>;
     } else {
